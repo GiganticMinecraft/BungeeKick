@@ -1,27 +1,31 @@
-BungeeKick works kind of like [MoveMeNow](http://www.spigotmc.org/resources/movemenow.17/). When players are kicked from a proxied server, they are pushed to the lobby instead of quitting the session, and are given the kick reason as a message. BungeeKick doesnt have the Blacklist/Whitelist compatibility like MoveMeNow. You can try my Bukkit plugin [WhitelistPerm](http://www.spigotmc.org/resources/whitelistperm.1309/) for this.
+# BungeeKick
 
-Please report any issues with this plugin [HERE](https://github.com/vik1395/BungeeKick-Minecraft/issues)
+BungeeKick works kind of like [MoveMeNow](http://www.spigotmc.org/resources/movemenow.17/).
+When players are kicked from a proxied server, they are pushed to the lobby instead of quitting the session,
+and are given the kick reason as a message.
 
-If you like my work, please consider donating, I would greatly appreciate it. [![Image](https://www.paypalobjects.com/en_US/i/btn/btn_donate_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=vik1395lp%40gmail%2ecom&lc=US&item_name=Spigot%20Plugins&item_number=LegitPlay%2enet%20Plugin%20Dev&no_note=0&currency_code=USD&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHostedGuest)
+BungeeKick doesn't have the Blacklist/Whitelist compatibility like MoveMeNow.
+You can try my Bukkit plugin [WhitelistPerm](http://www.spigotmc.org/resources/whitelistperm.1309/) for this.
 
-**Config.yml**
--------------
-This can be found under /plugins/BungeeKick folder.
+This repository is a fork of [vik1395/BungeeKick-Minecraft](https://github.com/vik1395/BungeeKick-Minecraft), but with improved [CI](./.github) and [releases](https://github.com/vik1395/BungeeKick-Minecraft/releases) to support setting up a Minecraft-server system declaratively.
 
-Kick Message supports color. Just use minecraft color codes. you can use the '&' symbol instead of '§' as well.
+## `config.yml`
 
-    ServerName: 'lobby'
-    
-    # This is where the player is kicked to. This is usually the lobby/hub server
-    
-    KickMessage: '&6You have been kicked! Reason: &2'
-    
-    # Message to be sent to the player who has been kicked. This message is followed by the kick reason
-    
-    ShowKickMessage: True
-    
-    # Set this to True if you want the kicked player to be able to see the kick reason.
+This can be found under `/plugins/BungeeKick` folder of the BungeeCord installation.
 
-This plugin is licensed under [CC Attribution-ShareAlike 4.0 International](http://creativecommons.org/licenses/by-nc-sa/4.0/deed.en_US). 
+Kick message supports color.
+Just use minecraft color codes.
+you can use the `&` symbol instead of `§` as well.
 
-In very basic terms, Do whatever you want with the code of this plugin, as long as you give credits to the author and/or the plugin itself.
+```YAML
+# This is where the player is kicked to. This is usually the lobby/hub server
+ServerName: 'lobby'
+
+# Message to be sent to the player who has been kicked. This message is followed by the kick reason
+KickMessage: '&6You have been kicked! Reason: &2'
+
+# Set this to True if you want the kicked player to be able to see the kick reason.
+ShowKickMessage: True
+```
+
+This plugin is licensed under [CC Attribution-NonCommercial-ShareAlike 4.0 International](http://creativecommons.org/licenses/by-nc-sa/4.0/deed.en_US). 
