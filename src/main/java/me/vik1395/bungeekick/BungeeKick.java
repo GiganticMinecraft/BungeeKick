@@ -25,42 +25,49 @@ import net.md_5.bungee.config.YamlConfiguration;
  */
 
 public class BungeeKick extends Plugin {
+    private static final String configFilePathInDataFolder = "config.yml";
+
+    private void writeConfigIfNotExists() throws IOException {
+        final var dataFolder = this.getDataFolder();
+        if (!dataFolder.exists()) {
+            dataFolder.mkdir();
+        }
+
+        final var configFile = new File(dataFolder, configFilePathInDataFolder);
+
+        if (!configFile.exists()) {
+            String file = "ServerName: \'lobby\'\n"
+                    + "# This is where the player is kicked to. This is usually the lobby/hub server\n"
+                    + "KickMessage: \'&6You have been kicked! Reason:&4 \'\n"
+                    + "# Message to be sent to the player who has been kicked. This message is followed by the kick reason"
+                    + "ShowKickMessage: True\n"
+                    + "# Set this to True if you want the kicked player to be able to see the kick reason.";
+
+            FileWriter fw = new FileWriter(configFile);
+            BufferedWriter out = new BufferedWriter(fw);
+            out.write(file);
+            out.close();
+            fw.close();
+        }
+    }
+
+    private BungeeKickConfiguration loadUpToDateConfig() throws IOException {
+        writeConfigIfNotExists();
+
+        final var configFile = new File(this.getDataFolder(), configFilePathInDataFolder);
+
+        final var cProvider = ConfigurationProvider.getProvider(YamlConfiguration.class);
+        final var loadedConfig = cProvider.load(configFile);
+
+        return new BungeeKickConfiguration(
+                loadedConfig.getString("ServerName"),
+                loadedConfig.getString("KickMessage"),
+                loadedConfig.getBoolean("ShowKickMessage"));
+    }
+
     public void onEnable() {
-        final var cFolder = new File(this.getDataFolder(), "");
-
-        if (!cFolder.exists()) {
-            cFolder.mkdir();
-        }
-
-        final var cFile = new File(this.getDataFolder() + "/config.yml");
-        if (!cFile.exists()) {
-            try {
-                String file = "ServerName: \'lobby\'\n"
-                        + "# This is where the player is kicked to. This is usually the lobby/hub server\n"
-                        + "KickMessage: \'&6You have been kicked! Reason:&4 \'\n"
-                        + "# Message to be sent to the player who has been kicked. This message is followed by the kick reason"
-                        + "ShowKickMessage: True\n"
-                        + "# Set this to True if you want the kicked player to be able to see the kick reason.";
-
-                FileWriter fw = new FileWriter(cFile);
-                BufferedWriter out = new BufferedWriter(fw);
-                out.write(file);
-                out.close();
-                fw.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-
         try {
-            final var cProvider = ConfigurationProvider.getProvider(YamlConfiguration.class);
-            final var loadedConfig = cProvider.load(cFile);
-
-            final var config = new BungeeKickConfiguration(
-                    loadedConfig.getString("ServerName"),
-                    loadedConfig.getString("KickMessage"),
-                    loadedConfig.getBoolean("ShowKickMessage"));
-
+            final var config = loadUpToDateConfig();
             final var listener = new PlayerListener(this.getProxy(), config);
 
             this.getProxy().getPluginManager().registerListener(this, listener);
