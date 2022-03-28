@@ -24,17 +24,10 @@ import net.md_5.bungee.event.EventHandler;
  * You may find an abridged version of the License at http://creativecommons.org/licenses/by-sa/4.0/
  */
 
-public class PlayerListener implements Listener {
-    BungeeKick plugin;
-
-    public PlayerListener(BungeeKick plugin) {
-        this.plugin = plugin;
-    }
-
+public record PlayerListener(ProxyServer proxy, BungeeKickConfiguration config) implements Listener {
     @EventHandler
     public void onServerKickEvent(ServerKickEvent ev) {
         final var player = ev.getPlayer();
-        final var proxy = this.plugin.getProxy();
 
         ServerInfo kickedFrom = null;
 
@@ -52,7 +45,7 @@ public class PlayerListener implements Listener {
             }
         }
 
-        final var kickTo = proxy.getServerInfo(BungeeKick.config.getString("ServerName"));
+        final var kickTo = proxy.getServerInfo(config.serverName());
 
         if (kickedFrom != null && kickedFrom.equals(kickTo)) {
             return;
@@ -61,8 +54,8 @@ public class PlayerListener implements Listener {
         ev.setCancelled(true);
         ev.setCancelServer(kickTo);
 
-        if (BungeeKick.config.getBoolean("ShowKickMessage")) {
-            String msg = BungeeKick.config.getString("KickMessage");
+        if (config.showKickMessage()) {
+            String msg = config.kickMessage();
             msg = ChatColor.translateAlternateColorCodes('&', msg);
             String kmsg = ChatColor.stripColor(BaseComponent.toLegacyText(ev.getKickReasonComponent()));
             msg = msg + kmsg;

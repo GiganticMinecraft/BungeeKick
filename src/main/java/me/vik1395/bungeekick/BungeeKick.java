@@ -6,7 +6,6 @@ import java.io.FileWriter;
 import java.io.IOException;
 
 import net.md_5.bungee.api.plugin.Plugin;
-import net.md_5.bungee.config.Configuration;
 import net.md_5.bungee.config.ConfigurationProvider;
 import net.md_5.bungee.config.YamlConfiguration;
 
@@ -26,10 +25,6 @@ import net.md_5.bungee.config.YamlConfiguration;
  */
 
 public class BungeeKick extends Plugin {
-    public static Configuration config;
-    public static ConfigurationProvider cProvider;
-    public static File cFile;
-
     public void onEnable() {
         final var cFolder = new File(this.getDataFolder(), "");
 
@@ -37,8 +32,7 @@ public class BungeeKick extends Plugin {
             cFolder.mkdir();
         }
 
-        cFile = new File(this.getDataFolder() + "/config.yml");
-
+        final var cFile = new File(this.getDataFolder() + "/config.yml");
         if (!cFile.exists()) {
             try {
                 String file = "ServerName: \'lobby\'\n"
@@ -58,18 +52,20 @@ public class BungeeKick extends Plugin {
             }
         }
 
-        cProvider = ConfigurationProvider.getProvider(YamlConfiguration.class);
         try {
-            config = cProvider.load(cFile);
+            final var cProvider = ConfigurationProvider.getProvider(YamlConfiguration.class);
+            final var loadedConfig = cProvider.load(cFile);
+
+            final var config = new BungeeKickConfiguration(
+                    loadedConfig.getString("ServerName"),
+                    loadedConfig.getString("KickMessage"),
+                    loadedConfig.getBoolean("ShowKickMessage"));
+
+            final var listener = new PlayerListener(this.getProxy(), config);
+
+            this.getProxy().getPluginManager().registerListener(this, listener);
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        this.getProxy().getPluginManager().registerListener(this, new PlayerListener(this));
     }
-
-    public void onDisable() {
-        config = null;
-    }
-
 }
