@@ -1,10 +1,7 @@
 package me.vik1395.bungeekick;
 
 import net.md_5.bungee.api.AbstractReconnectHandler;
-import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
-import net.md_5.bungee.api.chat.BaseComponent;
-import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ServerKickEvent;
@@ -58,11 +55,7 @@ public record PlayerKickListener(ProxyServer proxy, BungeeKickConfiguration conf
         ev.setCancelServer(kickTo);
 
         if (config.showKickMessage()) {
-            String msg = config.kickMessage();
-            msg = ChatColor.translateAlternateColorCodes('&', msg);
-            String kmsg = ChatColor.stripColor(BaseComponent.toLegacyText(ev.getKickReasonComponent()));
-            msg = msg + kmsg;
-            ev.getPlayer().sendMessage(new TextComponent(msg));
+            player.sendMessage(config.kickMessageTextComponent(ev.getKickReasonComponent()));
         }
     }
 }
