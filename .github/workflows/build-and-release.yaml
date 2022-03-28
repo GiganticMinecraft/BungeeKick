@@ -1,0 +1,27 @@
+name: Build and publish docker image
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@master
+        with:
+          fetch-depth: '0'
+        
+      - name: build artifacts
+        run: mvn install
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ./target/bungeekick-*
+          draft: false
+          prerelease: false
+          tag_name: ${{ github.sha }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
