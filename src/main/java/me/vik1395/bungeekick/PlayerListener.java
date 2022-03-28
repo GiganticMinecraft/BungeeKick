@@ -6,6 +6,8 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
+import net.md_5.bungee.api.connection.PendingConnection;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ServerKickEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
@@ -33,25 +35,26 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onServerKickEvent(ServerKickEvent ev) {
+        final ProxiedPlayer player = ev.getPlayer();
+        final ProxyServer proxy = this.plugin.getProxy();
+
         ServerInfo kickedFrom = null;
 
-        if (ev.getPlayer().getServer() != null) {
-            kickedFrom = ev.getPlayer().getServer().getInfo();
-        }
+        if (player.getServer() != null) {
+            kickedFrom = player.getServer().getInfo();
+        } else if (proxy.getReconnectHandler() != null) {
+            kickedFrom = proxy.getReconnectHandler().getServer(player);
+        } else {
+            final PendingConnection pendingConnection = player.getPendingConnection();
+            kickedFrom = AbstractReconnectHandler.getForcedHost(pendingConnection);
 
-        else if (this.plugin.getProxy().getReconnectHandler() != null) {
-            kickedFrom = this.plugin.getProxy().getReconnectHandler().getServer(ev.getPlayer());
-        }
-
-        else {
-            kickedFrom = AbstractReconnectHandler.getForcedHost(ev.getPlayer().getPendingConnection());
             if (kickedFrom == null) {
                 kickedFrom = ProxyServer.getInstance()
-                        .getServerInfo(ev.getPlayer().getPendingConnection().getListener().getDefaultServer());
+                        .getServerInfo(pendingConnection.getListener().getDefaultServer());
             }
         }
 
-        ServerInfo kickTo = this.plugin.getProxy().getServerInfo(BungeeKick.config.getString("ServerName"));
+        final ServerInfo kickTo = proxy.getServerInfo(BungeeKick.config.getString("ServerName"));
 
         if (kickedFrom != null && kickedFrom.equals(kickTo)) {
             return;
@@ -59,6 +62,7 @@ public class PlayerListener implements Listener {
 
         ev.setCancelled(true);
         ev.setCancelServer(kickTo);
+
         if (BungeeKick.config.getBoolean("ShowKickMessage")) {
             String msg = BungeeKick.config.getString("KickMessage");
             msg = ChatColor.translateAlternateColorCodes('&', msg);
