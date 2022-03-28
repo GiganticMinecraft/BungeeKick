@@ -1,4 +1,4 @@
-package me.vik1395.BungeeKick;
+package me.vik1395.bungeekick;
 
 import net.md_5.bungee.api.AbstractReconnectHandler;
 import net.md_5.bungee.api.ChatColor;

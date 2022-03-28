@@ -1,4 +1,4 @@
-package me.vik1395.BungeeKick;
+package me.vik1395.bungeekick;
 
 import java.io.BufferedWriter;
 import java.io.File;
