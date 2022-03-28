@@ -6,6 +6,7 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ServerKickEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
@@ -24,27 +25,29 @@ import net.md_5.bungee.event.EventHandler;
  * You may find an abridged version of the License at http://creativecommons.org/licenses/by-sa/4.0/
  */
 
-public record PlayerListener(ProxyServer proxy, BungeeKickConfiguration config) implements Listener {
+public record PlayerKickListener(ProxyServer proxy, BungeeKickConfiguration config) implements Listener {
+    private ServerInfo originOfKick(ProxiedPlayer player) {
+        if (player.getServer() != null) {
+            return player.getServer().getInfo();
+        } else if (proxy.getReconnectHandler() != null) {
+            return proxy.getReconnectHandler().getServer(player);
+        } else {
+            final var pendingConnection = player.getPendingConnection();
+            final var forcedHost = AbstractReconnectHandler.getForcedHost(pendingConnection);
+
+            if (forcedHost != null) {
+                return forcedHost;
+            } else {
+                final var defaultServer = pendingConnection.getListener().getServerPriority().get(0);
+                return proxy.getServerInfo(defaultServer);
+            }
+        }
+    }
+
     @EventHandler
     public void onServerKickEvent(ServerKickEvent ev) {
         final var player = ev.getPlayer();
-
-        ServerInfo kickedFrom = null;
-
-        if (player.getServer() != null) {
-            kickedFrom = player.getServer().getInfo();
-        } else if (proxy.getReconnectHandler() != null) {
-            kickedFrom = proxy.getReconnectHandler().getServer(player);
-        } else {
-            final var pendingConnection = player.getPendingConnection();
-            kickedFrom = AbstractReconnectHandler.getForcedHost(pendingConnection);
-
-            if (kickedFrom == null) {
-                kickedFrom = ProxyServer.getInstance()
-                        .getServerInfo(pendingConnection.getListener().getServerPriority().get(0));
-            }
-        }
-
+        final var kickedFrom = originOfKick(player);
         final var kickTo = proxy.getServerInfo(config.serverName());
 
         if (kickedFrom != null && kickedFrom.equals(kickTo)) {

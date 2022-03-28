@@ -68,7 +68,7 @@ public class BungeeKick extends Plugin {
     public void onEnable() {
         try {
             final var config = loadUpToDateConfig();
-            final var listener = new PlayerListener(this.getProxy(), config);
+            final var listener = new PlayerKickListener(this.getProxy(), config);
 
             this.getProxy().getPluginManager().registerListener(this, listener);
         } catch (IOException e) {
