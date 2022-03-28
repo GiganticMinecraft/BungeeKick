@@ -19,7 +19,9 @@ jobs:
           java-version: '17'
 
       - name: build artifacts
-        run: mvn install
+        run: |
+          mvn -version
+          mvn install
 
       - name: Release
         uses: softprops/action-gh-release@v1
