@@ -31,7 +31,7 @@ public class BungeeKick extends Plugin {
     public static File cFile;
 
     public void onEnable() {
-        File cFolder = new File(this.getDataFolder(), "");
+        final var cFolder = new File(this.getDataFolder(), "");
 
         if (!cFolder.exists()) {
             cFolder.mkdir();

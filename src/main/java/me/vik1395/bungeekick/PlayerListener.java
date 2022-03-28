@@ -6,8 +6,6 @@ import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.config.ServerInfo;
-import net.md_5.bungee.api.connection.PendingConnection;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.ServerKickEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
@@ -35,8 +33,8 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onServerKickEvent(ServerKickEvent ev) {
-        final ProxiedPlayer player = ev.getPlayer();
-        final ProxyServer proxy = this.plugin.getProxy();
+        final var player = ev.getPlayer();
+        final var proxy = this.plugin.getProxy();
 
         ServerInfo kickedFrom = null;
 
@@ -45,7 +43,7 @@ public class PlayerListener implements Listener {
         } else if (proxy.getReconnectHandler() != null) {
             kickedFrom = proxy.getReconnectHandler().getServer(player);
         } else {
-            final PendingConnection pendingConnection = player.getPendingConnection();
+            final var pendingConnection = player.getPendingConnection();
             kickedFrom = AbstractReconnectHandler.getForcedHost(pendingConnection);
 
             if (kickedFrom == null) {
@@ -54,7 +52,7 @@ public class PlayerListener implements Listener {
             }
         }
 
-        final ServerInfo kickTo = proxy.getServerInfo(BungeeKick.config.getString("ServerName"));
+        final var kickTo = proxy.getServerInfo(BungeeKick.config.getString("ServerName"));
 
         if (kickedFrom != null && kickedFrom.equals(kickTo)) {
             return;
