@@ -50,7 +50,7 @@ public class PlayerListener implements Listener {
 
             if (kickedFrom == null) {
                 kickedFrom = ProxyServer.getInstance()
-                        .getServerInfo(pendingConnection.getListener().getDefaultServer());
+                        .getServerInfo(pendingConnection.getListener().getServerPriority().get(0));
             }
         }
 
