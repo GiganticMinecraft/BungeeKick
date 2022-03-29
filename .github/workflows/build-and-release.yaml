@@ -29,6 +29,6 @@ jobs:
           files: ./target/bungeekick-*
           draft: false
           prerelease: false
-          tag_name: ${{ github.sha }}
+          tag_name: release-at-${{ github.sha }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
